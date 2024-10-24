@@ -163,11 +163,13 @@ void topo_velocity_interior_H(topo_t *T)
 #if sm_61
 #define nq 2
 #define nr 2
-        dim3 threads(64, 2, 2);
+	//64
+        dim3 threads(32, 2, 2);
 #else
 #define nq 2
 #define nr 4
-        dim3 threads(32, 2, 2);
+	//32
+        dim3 threads(16, 2, 2);
 #endif
         dim3 loop(nr, nq, 1);
 

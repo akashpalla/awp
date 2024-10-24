@@ -36,6 +36,10 @@
 #include <buffers/buffer.h>
 
 #define VERBOSE 1
+#define TASKS_PER_NODE 9
+// Modify this value for each system. e.g: Lonestar = 3 GPU * 3 (CPU/GPU) = 9
+
+
 
 // Uncomment this line to allow for gdb to attach to the mpi process with
 // rank = 0
@@ -386,12 +390,13 @@ int main(int argc, char **argv)
    MPI_Comm_dup(MPI_COMM_WORLD, &MCT);
    /* The communicator MCW includes all ranks involved in GPU computations */
    /* colors for MPI_Comm_split: 0=launches kernels; 1=source I/O for IFAULT=4; 2=time series output*/
-   if (rank < size)
+   if (rank % 3 == 0)
       ranktype = 0;
-   else if (rank < size * 2)
+   else if (rank % 3 == 1)
       ranktype = 1;
    else
       ranktype = 2;
+
    MPI_Comm_split(MCT, ranktype, 0, &MCW);
    MPI_Comm_split(MCT, ranktype, 1, &MCS);
    MPI_Comm_split(MCT, ranktype, 2, &MCI);
@@ -471,12 +476,17 @@ int main(int argc, char **argv)
       if (y_rank_B < 0)
          y_rank_B = -1;
 
-      err = MPI_Cart_coords(MC1, rank, 2, coord);
+      err = MPI_Cart_coords(MC1, rank/3, 2, coord);
       err = MPI_Barrier(MCW);
       // Below line is only for HPGPU4 machine!
       //rank_gpu = rank%4;
       // Below line is for 1 GPU/node systems or Summit using 1 GPU per resource set
-      rank_gpu = 0;
+      //rank = 0
+      
+
+      rank_gpu = (rank % TASKS_PER_NODE )/3;
+     
+      printf("Hello from rank %d and ranktype %d gpu %d\n", rank, ranktype, rank_gpu);
       CUCHK(cudaSetDevice(rank_gpu));
 
 #if VERBOSE
@@ -533,14 +543,14 @@ int main(int argc, char **argv)
       }
 
 #ifndef NOBGIO
-      MPI_Send(rec_nxt, ngrids, MPI_INT, rank + 2 * size, MPIRANKIO, MPI_COMM_WORLD);
-      MPI_Send(rec_nyt, ngrids, MPI_INT, rank + 2 * size, MPIRANKIO + 1, MPI_COMM_WORLD);
-      MPI_Send(rec_nzt, ngrids, MPI_INT, rank + 2 * size, MPIRANKIO + 2, MPI_COMM_WORLD);
-      MPI_Send(rec_NX, ngrids, MPI_INT, rank + 2 * size, MPIRANKIO + 3, MPI_COMM_WORLD);
-      MPI_Send(rec_NY, ngrids, MPI_INT, rank + 2 * size, MPIRANKIO + 4, MPI_COMM_WORLD);
-      MPI_Send(rec_NZ, ngrids, MPI_INT, rank + 2 * size, MPIRANKIO + 5, MPI_COMM_WORLD);
-      MPI_Send(grid_output, ngrids, MPI_INT, rank + 2 * size, MPIRANKIO + 6, MPI_COMM_WORLD);
-      MPI_Send(displacement, ngrids, MPI_OFFSET, rank + 2 * size, MPIRANKIO + 7, MPI_COMM_WORLD);
+      MPI_Send(rec_nxt, ngrids, MPI_INT, rank + 2, MPIRANKIO, MPI_COMM_WORLD);
+      MPI_Send(rec_nyt, ngrids, MPI_INT, rank + 2, MPIRANKIO + 1, MPI_COMM_WORLD);
+      MPI_Send(rec_nzt, ngrids, MPI_INT, rank + 2, MPIRANKIO + 2, MPI_COMM_WORLD);
+      MPI_Send(rec_NX, ngrids, MPI_INT, rank + 2, MPIRANKIO + 3, MPI_COMM_WORLD);
+      MPI_Send(rec_NY, ngrids, MPI_INT, rank + 2, MPIRANKIO + 4, MPI_COMM_WORLD);
+      MPI_Send(rec_NZ, ngrids, MPI_INT, rank + 2, MPIRANKIO + 5, MPI_COMM_WORLD);
+      MPI_Send(grid_output, ngrids, MPI_INT, rank + 2, MPIRANKIO + 6, MPI_COMM_WORLD);
+      MPI_Send(displacement, ngrids, MPI_OFFSET, rank + 2, MPIRANKIO + 7, MPI_COMM_WORLD);
 #else
       dispArray = (MPI_Aint **)calloc(ngrids, sizeof(MPI_Aint *));
       ones = (int **)calloc(ngrids, sizeof(int *));
@@ -2698,14 +2708,14 @@ if (usemms) {
 #ifndef NOBGIO
                         outsize = rec_nxt[p] * rec_nyt[p] * rec_nzt[p] * WRITE_STEP;
                         time(&time1);
-                        MPI_Send(Bufx[p], outsize, MPI_FLOAT, rank + 2 * size, MPIRANKIO + 30, MPI_COMM_WORLD);
+                        MPI_Send(Bufx[p], outsize, MPI_FLOAT, rank + 2, MPIRANKIO + 30, MPI_COMM_WORLD);
                         time(&time2);
                         if (rank == 0 && p == 0)
                            fprintf(stdout, "Wait time for sending output (): %5.f seconds.\n", difftime(time2, time1));
-                        MPI_Send(Bufy[p], outsize, MPI_FLOAT, rank + 2 * size, MPIRANKIO + 31, MPI_COMM_WORLD);
-                        MPI_Send(Bufz[p], outsize, MPI_FLOAT, rank + 2 * size, MPIRANKIO + 32, MPI_COMM_WORLD);
+                        MPI_Send(Bufy[p], outsize, MPI_FLOAT, rank + 2, MPIRANKIO + 31, MPI_COMM_WORLD);
+                        MPI_Send(Bufz[p], outsize, MPI_FLOAT, rank + 2, MPIRANKIO + 32, MPI_COMM_WORLD);
                         if (NVE == 3)
-                           MPI_Send(Bufeta[p], outsize, MPI_FLOAT, rank + 2 * size, MPIRANKIO + 33, MPI_COMM_WORLD);
+                           MPI_Send(Bufeta[p], outsize, MPI_FLOAT, rank + 2, MPIRANKIO + 33, MPI_COMM_WORLD);
 #else
                         sprintf(filename, "%s_%1d_%07ld", filenamebasex, p, cur_step);
                         err = MPI_File_open(MCW, filename, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
@@ -3216,3 +3226,5 @@ if (usemms) {
    MPI_Finalize();
    return (0);
 }
+
+

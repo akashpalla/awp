@@ -80,14 +80,14 @@ void background_output_writer(int rank, int size, int nout, int wstep, int ntisk
    /*Initialize MPI Filetype */
    dispArray=(MPI_Aint**) calloc(ngrids, sizeof(MPI_Aint*));
    ones=(int**) calloc(ngrids, sizeof(int*));
-   MPICHK(MPI_Recv(rec_nxt, ngrids, MPI_INT, rank-2*size, MPIRANKIO, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-   MPICHK(MPI_Recv(rec_nyt, ngrids, MPI_INT, rank-2*size, MPIRANKIO+1, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-   MPICHK(MPI_Recv(rec_nzt, ngrids, MPI_INT, rank-2*size, MPIRANKIO+2, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-   MPICHK(MPI_Recv(rec_NX, ngrids, MPI_INT, rank-2*size, MPIRANKIO+3, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-   MPICHK(MPI_Recv(rec_NY, ngrids, MPI_INT, rank-2*size, MPIRANKIO+4, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-   MPICHK(MPI_Recv(rec_NZ, ngrids, MPI_INT, rank-2*size, MPIRANKIO+5, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-   MPICHK(MPI_Recv(grid_output, ngrids, MPI_INT, rank-2*size, MPIRANKIO+6, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-   MPICHK(MPI_Recv(displacement, ngrids, MPI_OFFSET, rank-2*size, MPIRANKIO+7, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+   MPICHK(MPI_Recv(rec_nxt, ngrids, MPI_INT, rank-2, MPIRANKIO, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+   MPICHK(MPI_Recv(rec_nyt, ngrids, MPI_INT, rank-2, MPIRANKIO+1, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+   MPICHK(MPI_Recv(rec_nzt, ngrids, MPI_INT, rank-2, MPIRANKIO+2, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+   MPICHK(MPI_Recv(rec_NX, ngrids, MPI_INT, rank-2, MPIRANKIO+3, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+   MPICHK(MPI_Recv(rec_NY, ngrids, MPI_INT, rank-2, MPIRANKIO+4, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+   MPICHK(MPI_Recv(rec_NZ, ngrids, MPI_INT, rank-2, MPIRANKIO+5, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+   MPICHK(MPI_Recv(grid_output, ngrids, MPI_INT, rank-2, MPIRANKIO+6, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+   MPICHK(MPI_Recv(displacement, ngrids, MPI_OFFSET, rank-2, MPIRANKIO+7, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
 #if VERBOSE
    fprintf(stdout, "I/O: ngrids=%d\n", ngrids);
@@ -164,11 +164,11 @@ void background_output_writer(int rank, int size, int nout, int wstep, int ntisk
       cur_step = (n+1)*wstep*ntiskp;
       for (p=0; p<ngrids; p++){
          if (outsize[p] > 0){
-            MPICHK(MPI_Recv(Bufx[p], outsize[p], _mpi_prec, rank-2*size, MPIRANKIO+30, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-            MPICHK(MPI_Recv(Bufy[p], outsize[p], _mpi_prec, rank-2*size, MPIRANKIO+31, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-            MPICHK(MPI_Recv(Bufz[p], outsize[p], _mpi_prec, rank-2*size, MPIRANKIO+32, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+            MPICHK(MPI_Recv(Bufx[p], outsize[p], _mpi_prec, rank-2, MPIRANKIO+30, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+            MPICHK(MPI_Recv(Bufy[p], outsize[p], _mpi_prec, rank-2, MPIRANKIO+31, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+            MPICHK(MPI_Recv(Bufz[p], outsize[p], _mpi_prec, rank-2, MPIRANKIO+32, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
             if (NVE ==3) 
-               MPICHK(MPI_Recv(Bufeta[p], outsize[p], _mpi_prec, rank-2*size, MPIRANKIO+33, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+               MPICHK(MPI_Recv(Bufeta[p], outsize[p], _mpi_prec, rank-2, MPIRANKIO+33, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
          }
       }
 

@@ -629,21 +629,21 @@ int read_src_ifault_4 (int rank, int READ_STEP, char *INSRC,
        sprintf(yfile, fbc_pmask, 'Y');
        sprintf(zfile, fbc_pmask, 'Z');
 
-       ierr=MPI_Send(&npsrc, 1, MPI_INT, rank+size, MPIRANKSRC, MPI_COMM_WORLD);
+       ierr=MPI_Send(&npsrc, 1, MPI_INT, rank+1, MPIRANKSRC, MPI_COMM_WORLD);
        errhandle(ierr, "MPI_Send 0");
-       ierr=MPI_Send(fbc_extl, 6, MPI_INT, rank+size, MPIRANKSRC+1, MPI_COMM_WORLD);
+       ierr=MPI_Send(fbc_extl, 6, MPI_INT, rank+1, MPIRANKSRC+1, MPI_COMM_WORLD);
        errhandle(ierr, "MPI_Send 1");
-       ierr=MPI_Send(xfile, FNAMELEN, MPI_CHAR, rank+size, MPIRANKSRC+2, MPI_COMM_WORLD);
+       ierr=MPI_Send(xfile, FNAMELEN, MPI_CHAR, rank+1, MPIRANKSRC+2, MPI_COMM_WORLD);
        errhandle(ierr, "MPI_Send 2");
-       ierr=MPI_Send(yfile, FNAMELEN, MPI_CHAR, rank+size, MPIRANKSRC+3, MPI_COMM_WORLD);
+       ierr=MPI_Send(yfile, FNAMELEN, MPI_CHAR, rank+1, MPIRANKSRC+3, MPI_COMM_WORLD);
        errhandle(ierr, "MPI_Send 3");
-       ierr=MPI_Send(zfile, FNAMELEN, MPI_CHAR, rank+size, MPIRANKSRC+4, MPI_COMM_WORLD);
+       ierr=MPI_Send(zfile, FNAMELEN, MPI_CHAR, rank+1, MPIRANKSRC+4, MPI_COMM_WORLD);
        errhandle(ierr, "MPI_Send 4");
 
-       ierr=MPI_Send(&nxt, 1, MPI_INT, rank+size, MPIRANKSRC+5, MPI_COMM_WORLD);
-       ierr=MPI_Send(&nyt, 1, MPI_INT, rank+size, MPIRANKSRC+6, MPI_COMM_WORLD);
-       ierr=MPI_Send(&nzt, 1, MPI_INT, rank+size, MPIRANKSRC+7, MPI_COMM_WORLD);
-       ierr=MPI_Send(coords, 3, MPI_INT, rank+size, MPIRANKSRC+8, MPI_COMM_WORLD);
+       ierr=MPI_Send(&nxt, 1, MPI_INT, rank+1, MPIRANKSRC+5, MPI_COMM_WORLD);
+       ierr=MPI_Send(&nyt, 1, MPI_INT, rank+1, MPIRANKSRC+6, MPI_COMM_WORLD);
+       ierr=MPI_Send(&nzt, 1, MPI_INT, rank+1, MPIRANKSRC+7, MPI_COMM_WORLD);
+       ierr=MPI_Send(coords, 3, MPI_INT, rank+1, MPIRANKSRC+8, MPI_COMM_WORLD);
 
     } /* end of initialization */
 
@@ -671,9 +671,9 @@ int read_src_ifault_4 (int rank, int READ_STEP, char *INSRC,
       }
 
       time(&time1);
-      MPICHK(MPI_Recv(taxx+npsrc, npsrc*READ_STEP, _mpi_prec, rank+size, MPIRANKSRC+100, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-      MPICHK(MPI_Recv(tayy+npsrc, npsrc*READ_STEP, _mpi_prec, rank+size, MPIRANKSRC+101, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-      MPICHK(MPI_Recv(tazz+npsrc, npsrc*READ_STEP, _mpi_prec, rank+size, MPIRANKSRC+102, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+      MPICHK(MPI_Recv(taxx+npsrc, npsrc*READ_STEP, _mpi_prec, rank+1, MPIRANKSRC+100, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+      MPICHK(MPI_Recv(tayy+npsrc, npsrc*READ_STEP, _mpi_prec, rank+1, MPIRANKSRC+101, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+      MPICHK(MPI_Recv(tazz+npsrc, npsrc*READ_STEP, _mpi_prec, rank+1, MPIRANKSRC+102, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
       time(&time2);
       fprintf(stdout, "(%d) Time for MPI_Recv(): %4.f seconds.\n", rank, difftime(time2, time1));
 
@@ -710,21 +710,21 @@ int background_velocity_reader(int rank, int size, int NST, int READ_STEP, MPI_C
 
    fprintf(stdout, "(%d) fbc_off=%d, %d, %d\n", rank, fbc_off[0], fbc_off[1], fbc_off[2]);
 
-   ierr=MPI_Recv(&npsrc, 1, MPI_INT, rank-size, MPIRANKSRC, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(&npsrc, 1, MPI_INT, rank-1, MPIRANKSRC, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
    errhandle(ierr, "MPI_Recv 0");
-   ierr=MPI_Recv(fbc_extl, 6, MPI_INT, rank-size, MPIRANKSRC+1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(fbc_extl, 6, MPI_INT, rank-1, MPIRANKSRC+1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
    errhandle(ierr, "MPI_Recv 1");
-   ierr=MPI_Recv(xfile, FNAMELEN, MPI_CHAR, rank-size, MPIRANKSRC+2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(xfile, FNAMELEN, MPI_CHAR, rank-1, MPIRANKSRC+2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
    errhandle(ierr, "MPI_Recv 2");
-   ierr=MPI_Recv(yfile, FNAMELEN, MPI_CHAR, rank-size, MPIRANKSRC+3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(yfile, FNAMELEN, MPI_CHAR, rank-1, MPIRANKSRC+3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
    errhandle(ierr, "MPI_Recv 3");
-   ierr=MPI_Recv(zfile, FNAMELEN, MPI_CHAR, rank-size, MPIRANKSRC+4, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(zfile, FNAMELEN, MPI_CHAR, rank-1, MPIRANKSRC+4, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
    errhandle(ierr, "MPI_Recv 4");
 
-   ierr=MPI_Recv(&nxt, 1, MPI_INT, rank-size, MPIRANKSRC+5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-   ierr=MPI_Recv(&nyt, 1, MPI_INT, rank-size, MPIRANKSRC+6, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-   ierr=MPI_Recv(&nzt, 1, MPI_INT, rank-size, MPIRANKSRC+7, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-   ierr=MPI_Recv(coords, 3, MPI_INT, rank-size, MPIRANKSRC+8, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(&nxt, 1, MPI_INT, rank-1, MPIRANKSRC+5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(&nyt, 1, MPI_INT, rank-1, MPIRANKSRC+6, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(&nzt, 1, MPI_INT, rank-1, MPIRANKSRC+7, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   ierr=MPI_Recv(coords, 3, MPI_INT, rank-1, MPIRANKSRC+8, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
    if (npsrc > 0) color=1;
    MPICHK(MPI_Comm_split(MCS, color, 1, &fbc_comm));
@@ -777,9 +777,9 @@ int background_velocity_reader(int rank, int size, int NST, int READ_STEP, MPI_C
          time(&time2);
          fprintf(stdout, "(%d) Time for reading(): %4.f seconds.\n", rank, difftime(time2, time1));
 
-         MPICHK(MPI_Send(taxx, npsrc*READ_STEP, _mpi_prec, rank-size, MPIRANKSRC+100, MPI_COMM_WORLD));
-         MPICHK(MPI_Send(tayy, npsrc*READ_STEP, _mpi_prec, rank-size, MPIRANKSRC+101, MPI_COMM_WORLD));
-         MPICHK(MPI_Send(tazz, npsrc*READ_STEP, _mpi_prec, rank-size, MPIRANKSRC+102, MPI_COMM_WORLD));
+         MPICHK(MPI_Send(taxx, npsrc*READ_STEP, _mpi_prec, rank-1, MPIRANKSRC+100, MPI_COMM_WORLD));
+         MPICHK(MPI_Send(tayy, npsrc*READ_STEP, _mpi_prec, rank-1, MPIRANKSRC+101, MPI_COMM_WORLD));
+         MPICHK(MPI_Send(tazz, npsrc*READ_STEP, _mpi_prec, rank-1, MPIRANKSRC+102, MPI_COMM_WORLD));
 
          MPICHK(MPI_Barrier(fbc_comm));
      
