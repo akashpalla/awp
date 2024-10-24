@@ -21,7 +21,7 @@
 
 #include <awp/definitions.h>
 #include <grid/grid_3d.h>
-#include <stddef.h>
+
 // This parameter pads the compute region. Its needed for the computation of
 // derivative and interpolation stencils. Do not change its value.
 
