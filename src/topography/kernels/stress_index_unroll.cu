@@ -134,7 +134,7 @@ __global__ void dtopo_str_111_index_unroll(_prec*  RSTRCT xx, _prec*  RSTRCT yy,
   f_dcrjz = dcrjz[k];
   f_dcrjy = dcrjy[j];
 
-  // i - 2, j, k - 3: k + 3
+  // i - 1, j, k - 3: k + 3
   int m2p0m3 = pos - d_slice_2 - 3;
   int m2p0m2 = pos - d_slice_2 - 2;
   int m2p0m1 = pos - d_slice_2 - 1;
