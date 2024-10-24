@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <cuda.h>
 #include <stdint.h>
+
 #include <awp/error.h>
 #include <awp/pmcl3d_cons.h>
 #include <interpolation/interpolation.h>
 #include <grid/grid_3d.h>
 #include <interpolation/interpolation.cuh>
 #include <test/test.h>
-#include <cuda.h>
 
 int cuinterp_init(cu_interp_t *out, const prec *x, const prec *y, const prec *z,
                 grid3_t grid, const prec *qx, const prec *qy, const prec *qz,
