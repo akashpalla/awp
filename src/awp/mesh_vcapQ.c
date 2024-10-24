@@ -135,7 +135,12 @@ void inimesh(int rank, int MEDIASTART, Grid3D d1, Grid3D mu, Grid3D lam, Grid3D 
       if(MEDIASTART>=1 && MEDIASTART<=3)
       {
           char filename[40];
-          if(MEDIASTART<3) sprintf(filename,"%s",INVEL);
+          if(MEDIASTART<3)
+            {
+            sprintf(filename,"%s",INVEL);
+            printf("Rank=%d reading mesh from %s\n", rank, filename);
+            fflush(stdout);
+            }
           else if(MEDIASTART==3){
             sprintf(filename,"input_rst/mediapart/media%07d.bin",rank);
             if(rank%100==0) printf("Rank=%d, reading file=%s\n",rank,filename);
@@ -277,6 +282,80 @@ void inimesh(int rank, int MEDIASTART, Grid3D d1, Grid3D mu, Grid3D lam, Grid3D 
           for(k=0;k<nzt;k++)
           {
 
+
+    register float qsi, qpqsr, maxvpvsr, vmin, vmax, dmin;
+    qsi=var_QSI;
+    qpqsr=var_QPQSR;
+    maxvpvsr=var_MAXVPVSR;
+    vmin=var_VMIN;
+    vmax=var_VMAX;
+    dmin=var_DMIN;
+
+
+
+    //for solid materials
+    if(tmpvs[i][j][k] > 1.f && tmpvp[i][j][k] > 1.f)
+    {
+        if(nvar == 3)
+        {
+            //assigning Q value
+            if(qsi <= 1.)
+            {
+            tmpsq[i][j][k]=tmpvs[i][j][k]*qsi;
+            }
+            else if(qsi > 1.)
+            {            
+            tmpsq[i][j][k]=qsi;
+            }
+            tmppq[i][j][k]=tmpsq[i][j][k]*qpqsr;
+
+            //Added to test lower Qs for lower Vs
+            //if(tmpvs[i][j][k] < 1000.){
+            //if(tmpvs[i][j][k] < 600.){
+            //if(tmpvs[i][j][k] < 800.){
+            //tmpsq[i][j][k] = 25.;
+            //tmppq[i][j][k] = tmpsq[i][j][k]*qpqsr;
+            //}
+        }
+
+        //capping max vp/vs ratio
+        vpvs=tmpvp[i][j][k]/tmpvs[i][j][k];
+        if(vpvs > maxvpvsr)
+        {
+        tmpvs[i][j][k]=tmpvp[i][j][k]/maxvpvsr;
+        }
+
+        //constraining min vp/vs ratio if lower than 1.5 to avoid negative lambda
+        //Here vp/vs ratio will be set to 1.5
+        vpvs=tmpvp[i][j][k]/tmpvs[i][j][k];
+        if(vpvs <= 1.5)
+        {
+        tmpvs[i][j][k]=tmpvp[i][j][k]/1.5;
+        }
+
+        //capping vmin, vmax
+        if(tmpvs[i][j][k] < vmin)
+        {
+        vpvs=tmpvp[i][j][k]/tmpvs[i][j][k];
+        tmpvs[i][j][k]=vmin;
+        tmpvp[i][j][k]=tmpvs[i][j][k]*vpvs;
+        }
+
+        if(tmpvp[i][j][k]>vmax)
+        {
+        vpvs=tmpvp[i][j][k]/tmpvs[i][j][k];
+        tmpvp[i][j][k]=vmax;
+        tmpvs[i][j][k]=tmpvp[i][j][k]/vpvs;
+        }
+
+
+        //constrain minimum density 
+        if(tmpdd[i][j][k]<dmin) tmpdd[i][j][k]=dmin;
+
+    }
+
+
+
     //special treatment for water
     if (tmpvs[i][j][k] < 1.f && tmpvp[i][j][k] > 1.f)
     {
@@ -287,16 +366,6 @@ void inimesh(int rank, int MEDIASTART, Grid3D d1, Grid3D mu, Grid3D lam, Grid3D 
     tmppq[i][j][k] = 10000.;
     }
 
-    //special treatment for air
-    if (tmpvs[i][j][k] < 1.f && tmpvp[i][j][k] < 1.f)
-    {
-    tmpvs[i][j][k] = 0.00001;
-    tmpvp[i][j][k] = sqrt(2.)*tmpvs[i][j][k];
-    tmpdd[i][j][k] = 1.225;
-    tmpsq[i][j][k] = 25.;
-    tmppq[i][j][k] = 25.;
-    }    
-
     //capping minimum Q value
     if (tmppq[i][j][k] <= 25.)
     {
@@ -306,6 +375,7 @@ void inimesh(int rank, int MEDIASTART, Grid3D d1, Grid3D mu, Grid3D lam, Grid3D 
     {
     tmpsq[i][j][k] = 25.;
     }
+
 
 
 	    if(tmppq[i][j][k]>200.0)

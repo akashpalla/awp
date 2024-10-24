@@ -8,7 +8,7 @@
 
 // Threads in x, y, z
 #ifndef STRIU_TX
-#define STRIU_TX 32
+#define STRIU_TX 64
 #endif      
             
 #ifndef STRIU_TY
@@ -374,7 +374,8 @@ void topo_stress_right_H(topo_t *T)
                           T->stress_bounds_ydir[0]  + shift, 
                           T->stress_bounds_ydir[1]  + shift);
         CUCHK(cudaGetLastError());
-        }
+        
+	}
 
         {
         dim3 block(DTOPO_STR_112_X, DTOPO_STR_112_Y,
