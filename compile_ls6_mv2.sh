@@ -1,10 +1,5 @@
 #!/bin/bash
 
-template=src/awp/mesh_clean.c
-if [ -e "$template" ]; then
-    cp "$template" src/awp/mesh.c
-fi
-
 module unload intel impi
 module load cmake gcc mvapich2 cuda
 module list

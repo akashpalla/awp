@@ -1,9 +1,5 @@
 #!/bin/bash
 
-template=src/awp/mesh_clean.c
-if [ -e "$template" ]; then
-    cp "$template" src/awp/mesh.c
-fi
 
 module unload cmake
 #module unload gcc 
