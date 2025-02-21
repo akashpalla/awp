@@ -20,11 +20,12 @@ __constant__ int   d_slice_2[MAXGRIDS];
 __constant__ int   d_yline_1[MAXGRIDS];
 __constant__ int   d_yline_2[MAXGRIDS];
 
+/*
 texture<float, 1, cudaReadModeElementType> p_vx1;
 texture<float, 1, cudaReadModeElementType> p_vx2;
 texture<int, 1, cudaReadModeElementType> p_ww;
 texture<float, 1, cudaReadModeElementType> p_wwo;
-
+*/
 //Parameters used for STF filtering (Daniel)
 __constant__ int d_filtorder;
 __constant__ double d_srcfilt_b[MAXFILT], d_srcfilt_a[MAXFILT];
@@ -122,7 +123,7 @@ void SetDeviceConstValue(_prec *DH, _prec DT, int *nxt, int *nyt, int *nzt, int 
     CUCHK(cudaMemcpyToSymbol(d_RzT, RzT, 9*sizeof(float)));
     return;
 }
-
+/*
 extern "C"
 void BindArrayToTexture(float* vx1, float* vx2,int* ww, float* wwo, int memsize)   
 {
@@ -143,7 +144,7 @@ void UnBindArrayFromTexture()
    cudaUnbindTexture(p_wwo);
    return;
 }
-
+*/
 extern "C"
 void SetDeviceFilterParameters(int filtorder, double *srcfilt_b, double *srcfilt_a){
     CUCHK(cudaMemcpyToSymbol(d_filtorder, &filtorder, sizeof(int)));
