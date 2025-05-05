@@ -1,18 +1,27 @@
 #!/bin/bash
 
+#
+# Run this script interactively on a GPU node
+#
+
+template=src/awp/mesh_clean.c
+if [ -e "$template" ]; then
+    cp "$template" src/awp/mesh.c
+fi
 
 module unload cmake
 #module unload gcc 
 #ml reset
 #ml nvhpc-hpcx-cuda11/23.7
 #module load intel cmake impi cuda
+#ml gcc
 module unload openmpi
-module use /scratch/00494/tg457572/packages/modulefiles
+module load gcc/13.2.0
 
-module load e4s
-module load mvapich
-module load tau 
-ml cuda/12.4
+module load cuda/12.5
+module load mvapich-plus/4.0.0
+
+cp CMakeLists.txt.vista.mv2 CMakeLists.txt
 
 rm -r release
 mkdir -p release
@@ -21,7 +30,9 @@ cd release
 #export CXX
 
 #export MPI_HOME="/home1/07936/tg872351/mvp-pre-rc-ofi-cuda12.5"
-export MPI_HOME="/home1/07936/tg872351/mvp-pre-rc-zfp-cuda12.4"
+#export MPI_HOME="/home1/07936/tg872351/mvp-pre-rc-zfp-cuda12.4"
+#export MPI_HOME="/opt/apps/nvidia24/cuda12/mvapich-plus/4.0.0"
+export MPI_HOME="/opt/apps/gcc13/cuda12/mvapich-plus/4.0.0"
 
 export PATH=${MPI_HOME}/bin:$PATH
 export LD_LIBRARY_PATH=${MPI_HOME}/lib:$LD_LIBRARY_PATH
@@ -30,7 +41,7 @@ export C_INCLUDE_PATH=${MPI_HOME}/include:$C_INCLUDE_PATH
 
 export LD_LIBRARY_PATH=/home1/apps/nvidia/Linux_aarch64/24.7/cuda/12.5/lib64:$LD_LIBRARY_PATH
 
-export CC=$(which mpicc)
+#export CC=$(which mpicc)
 export CXX=$(which mpicxx)
 export FC=$(which mpifort)
 export MPI_C_COMPILER=$(which mpicc)

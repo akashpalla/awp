@@ -7,6 +7,8 @@ module unload cmake
 #ml nvhpc-hpcx-cuda11/23.7
 #module load intel cmake impi cuda
 
+cp CMakeLists.txt.vista.openmpi CMakeLists.txt
+
 rm -r release
 mkdir -p release
 
